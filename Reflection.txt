@@ -1,0 +1,17 @@
+**Structs vs Classes**
+
+In C, I had to do a lot of things by hand that Python just does for me. I had to put function pointers inside the struct and then point each one at the right function inside character_init. In Python, methods are part of the class automatically, so I never have to connect them myself. I also had to pass self every single time, like hero.attack(&hero). Python does that behind the scenes, so hero.attack() already knows which object it's working on. Even setting up the name took extra work in C, since I had to use strncpy and add the null terminator myself.
+
+Based on what I built, when I call a method in Python, it's basically looking up the function tied to that object and then calling it with the object passed in as self. So hero.attack() is really just doing something like attack(hero). Python hides the pointer and the lookup, but the idea is the same thing I wrote in C.
+
+**Inheritance Implementation**
+
+I did inheritance in C by putting a Character struct as the first member of Warrior and Mage. Since the base is first, a Warrior pointer and its Character part start at the same memory address, so I could cast between them. In warrior_init, I called character_init on the base to set up the parent part, then replaced the attack pointer with warrior_attack. That's basically my version of calling super().__init__() and overriding a method.
+
+In Python, all I would write is class Warrior(Character) and define a new attack method. Python handles the setup, the override, and accessing parent fields. It's cleaner and safer because I don't have to cast pointers or worry about the order of struct members. One wrong cast in C could read the wrong memory, and Python just doesn't let that happen.
+
+**Understanding OOP Mechanics**
+
+Function pointers make polymorphism possible because the call itself stays the same, but what it points to can be different for each object. When I looped through my party array and called party[i]->attack(party[i]), the villager, warrior, and mage all ran different functions. The loop didn't need to know what type each character was. It just followed the pointer stored in that object.
+
+I think systems programmers use these patterns because C gives them full control over memory and speed, which matters in things like operating systems, drivers, and embedded devices where Python would be too slow or too heavy. This approach still lets them organize code in a way that's flexible and reusable, even without classes. After doing this assignment, I understand that OOP isn't magic. It's just structs, pointers, and good organization.
